@@ -1,6 +1,8 @@
 package hanu.a2_2001040218;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Looper;
@@ -28,11 +30,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
+import hanu.a2_2001040218.db.DbHelper;
+import hanu.a2_2001040218.db.ProductManager;
 import hanu.a2_2001040218.models.Product;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
     private List<Product> products;
     private Context context;
+    private ProductManager productManager = new ProductManager();
 
     public ProductAdapter(Context context, List<Product> products) {
         this.products = products;
@@ -63,9 +68,19 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             @Override
             public void onClick(View view) {
                 Toast.makeText(context, "eweweqweqw", Toast.LENGTH_LONG).show();
+                int id = product.getId();
+                String thumbnail = product.getThumbnail();
+                String name = product.getName();
+                String category = product.getCategory();
+                int unitPrice = product.getUnitPrice();
+                Product product = new Product(thumbnail, name, category, unitPrice);
+                productManager.saveProduct(product);
+
+
             }
         });
     }
+
 
     private Bitmap downloadImage(String thumbnail) {
         try {
@@ -88,7 +103,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         return products.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView img;
         TextView productName;
         TextView productPrice;

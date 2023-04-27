@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -53,10 +55,7 @@ public class MainActivity extends AppCompatActivity {
         products = new ArrayList<Product>();
         // recycler view
         rvProducts = findViewById(R.id.rvProduct);
-        // layout items inside
 
-
-        // add click function to btn
         String url = "https://hanu-congnv.github.io/mpr-cart-api/products.json";
 
         ExecutorService executor = Executors.newFixedThreadPool(4); // shared globally in app
@@ -135,42 +134,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.menu_bar) {
             Toast.makeText(MainActivity.this, "clicked", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(MainActivity.this, MyCart.class);
+            startActivity(intent);
         }
+
         return super.onOptionsItemSelected(item);
     }
-
-
-//    private List<Product> loadProducts() {
-//
-//        // connect to database
-//        dbHelper = new DbHelper(MainActivity.this);
-//        sqLiteDatabase = dbHelper.getWritableDatabase();
-//
-//        //manipulate db
-//        Corsor result = sqLiteDatabase.rawQuery("SELECT * FROM products", null);
-//
-//        int idIndex = result.getColumnIndex("id");
-//        int thumbnailIndex = result.getColumnIndex("thumbnail");
-//        int nameIndex = result.getColumnIndex("name");
-//        int categoryIndex = result.getColumnIndex("category");
-//        int unitPriceIndex = result.getColumnIndex("unitPrice");
-//
-//        while(result.moveToNext()) {
-//            int id = result.getInt(idIndex);
-//            String thumbnail = result.getString(thumbnailIndex);
-//            String name = result.getString(emailIndex);
-//            String category = result.getString(categoryIndex);
-//            String unitPrice = result.getString(unitPriceIndex)
-//            Product product = newProduct(id, thumbnail, name, category, unitPrice);
-//            products.add(product);
-//        }
-//        // close connection
-//        result.close();
-//        sqLiteDatabase.close();
-//        return products;
-//
-//
-//    }
-
-
 }
