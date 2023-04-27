@@ -15,6 +15,17 @@ public class Product {
         this.unitPrice = unitPrice;
     }
 
+    public Product(String thumbnail, String name, String category, int unitPrice) {
+        this.thumbnail = thumbnail;
+        this.name = name;
+        this.category = category;
+        this.unitPrice = unitPrice;
+    }
+
+    public Product() {
+
+    }
+
     public int getId() {
         return id;
     }

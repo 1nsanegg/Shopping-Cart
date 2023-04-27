@@ -14,26 +14,26 @@
         android:padding="5dp"
 
         >
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="My Cart"
-        android:textSize="20dp"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="15dp"
-        android:layout_centerInParent="true"
-        />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="My Cart"
+            android:textSize="20dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="15dp"
+            android:layout_centerInParent="true"
+            />
 
-    <ImageButton
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:src="@drawable/iconcart"
-        android:scaleType="fitCenter"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="15dp"
-        android:layout_centerInParent="true"
-        android:background="@color/white"
-        />
+        <ImageButton
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/iconcart"
+            android:scaleType="fitCenter"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="15dp"
+            android:layout_centerInParent="true"
+            android:background="@color/white"
+            />
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="0dp"
@@ -64,7 +64,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:id="@+id/productList">
-
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/rvCart"/>
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
