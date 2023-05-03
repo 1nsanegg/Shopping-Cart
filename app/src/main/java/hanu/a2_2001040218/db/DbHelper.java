@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
 
 public class DbHelper extends SQLiteOpenHelper {
-    private static final String dbName = "z.db";
+    private static final String dbName = "z1.db";
     private static final int version = 1;
 
 
@@ -17,19 +17,16 @@ public class DbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        // create table
-//        sqLiteDatabase.execSQL("CREATE TABLE products (" +
-//                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-//                "thumbnail TEXT, " +
-//                "name TEXT, " +
-//                "category TEXT, " +
-//                "unitPrice TEXT)");
-        String createTableQuery = "CREATE TABLE my_table ("
-                + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + "name TEXT,"
-                + "age INTEGER"
-                + ")";
-        sqLiteDatabase.execSQL(createTableQuery);
+         //create table
+        sqLiteDatabase.execSQL("CREATE TABLE products (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "thumbnail TEXT, " +
+                "name TEXT , " +
+                "category TEXT, " +
+                "unitPrice TEXT," +
+                "quantity INTEGER," +
+                "totalPrice INTEGER)");
+
     }
 
     @Override
