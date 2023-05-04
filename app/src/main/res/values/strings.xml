@@ -7,4 +7,9 @@
     <string name="quantity">Quantity</string>
     <string name="sum">Sum</string>
     <string name="total">Total</string>
+    <string name="add_button">add button</string>
+    <string name="minus_button">minus button</string>
+    <string name="productimg">productImg</string>
+    <string name="increase_btn">increase_btn</string>
+    <string name="decrease_btn">decrease_btn</string>
 </resources>

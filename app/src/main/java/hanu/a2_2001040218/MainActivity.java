@@ -24,7 +24,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
                 });
             });
         });
-
     }
     public String loadJSON(String link) {
         URL url;

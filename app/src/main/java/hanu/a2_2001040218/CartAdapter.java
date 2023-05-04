@@ -22,9 +22,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.DecimalFormat;
+
 import java.text.NumberFormat;
-import java.util.Formatter;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
@@ -122,7 +122,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 //                    Toast.makeText(context, "add", Toast.LENGTH_LONG).show();
                 productManager.increaseQuantity(context, product.getName());
                 quantity.setText(String.valueOf(productManager.getQuantity(context, product.getName())));
-                totalPrice.setText(String.valueOf(productManager.getTotalPrice(product.getName())));
+                totalPrice.setText(numberFormat.format(productManager.getTotalPrice(product.getName())));
                 getCalBill();
 
             });
@@ -137,11 +137,11 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
                 }
                 quantity.setText(String.valueOf(productManager.getQuantity(context, product.getName())));
-                totalPrice.setText(String.valueOf(productManager.getTotalPrice(product.getName())));
+                totalPrice.setText(numberFormat.format(productManager.getTotalPrice(product.getName())));
                 getCalBill();
             });
             quantity.setText(String.valueOf(productManager.getQuantity(context, product.getName())));
-            totalPrice.setText(String.valueOf(productManager.getTotalPrice(product.getName())));
+            totalPrice.setText(numberFormat.format(productManager.getTotalPrice(product.getName())));
 
         }
     }
