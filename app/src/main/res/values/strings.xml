@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">My Cart</string>
+    <string name="searchsymbol">searchSymbol</string>
+    <string name="enter_key_word">enter key word</string>
+    <string name="search">search</string>
+    <string name="my_cart">My Cart</string>
+    <string name="quantity">Quantity</string>
+    <string name="sum">Sum</string>
+    <string name="total">Total</string>
 </resources>

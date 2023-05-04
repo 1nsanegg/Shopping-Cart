@@ -4,22 +4,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.os.HandlerCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -37,22 +32,28 @@ import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import hanu.a2_2001040218.db.DbHelper;
 import hanu.a2_2001040218.models.Product;
 
 public class MainActivity extends AppCompatActivity {
     RecyclerView rvProducts;
     List<Product> products;
     ProductAdapter productAdapter;
-    DbHelper dbHelper;
-    SQLiteDatabase sqLiteDatabase;
+//    DbHelper dbHelper;
+//    SQLiteDatabase sqLiteDatabase;
+    Button search_btn;
+    EditText searchQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // search
+        search_btn = findViewById(R.id.searchBtn);
+        searchQuery = findViewById(R.id.keyword);
+
         // btn_add
-        products = new ArrayList<Product>();
+        products = new ArrayList<>();
         // recycler view
         rvProducts = findViewById(R.id.rvProduct);
 
@@ -60,48 +61,50 @@ public class MainActivity extends AppCompatActivity {
 
         ExecutorService executor = Executors.newFixedThreadPool(4); // shared globally in app
         Handler handler = HandlerCompat.createAsync(Looper.getMainLooper());
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                // do something for result
-                String json = loadJSON(url);
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        // update UI (main thread) with result
-                        if (json == null) {
-                            Toast.makeText(MainActivity.this, "ERROR", Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                        try {
-                            JSONArray productsJSON = new JSONArray(json);
-                            for (int i = 0; i < productsJSON.length(); i++) {
-                                JSONObject productsJSONObject = productsJSON.getJSONObject(i);
+        executor.execute(() -> {
+            // do something for result
+            String json = loadJSON(url);
+            handler.post(() -> {
+                // update UI (main thread) with result
+                if (json == null) {
+                    Toast.makeText(MainActivity.this, "ERROR", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                try {
+                    JSONArray productsJSON = new JSONArray(json);
+                    for (int i = 0; i < productsJSON.length(); i++) {
+                        JSONObject productsJSONObject = productsJSON.getJSONObject(i);
 
-                                int id = productsJSONObject.getInt("id");
-                                String thumbnail = productsJSONObject.getString("thumbnail");
-                                String name = productsJSONObject.getString("name");
-                                String category = productsJSONObject.getString("category");
-                                int unitPrice = productsJSONObject.getInt("unitPrice");
+                        int id = productsJSONObject.getInt("id");
+                        String thumbnail = productsJSONObject.getString("thumbnail");
+                        String name = productsJSONObject.getString("name");
+                        String category = productsJSONObject.getString("category");
+                        int unitPrice = productsJSONObject.getInt("unitPrice");
 
 
-                                Product product = new Product(id, thumbnail, name, category, unitPrice);
-                                products.add(product);
+                        Product product = new Product(id, thumbnail, name, category, unitPrice);
+                        products.add(product);
 
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        rvProducts.setLayoutManager(new GridLayoutManager(MainActivity.this, 2));
-
-                        // connect dataset
-                        productAdapter = new ProductAdapter(MainActivity.this, products);
-                        rvProducts.setAdapter(productAdapter);
                     }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                rvProducts.setLayoutManager(new GridLayoutManager(MainActivity.this, 2));
+
+                // connect dataset
+                productAdapter = new ProductAdapter(MainActivity.this, products);
+                rvProducts.setAdapter(productAdapter);
+                int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.spacing);
+                rvProducts.addItemDecoration(new ProductItemDecoration(2, spacingInPixels, true));
+                productAdapter.filter("");
+                search_btn.setOnClickListener(view -> {
+                    String query = searchQuery.getText().toString();
+                    productAdapter.filter(query);
                 });
-            }
+            });
         });
+
     }
     public String loadJSON(String link) {
         URL url;
@@ -119,8 +122,6 @@ public class MainActivity extends AppCompatActivity {
                 result.append(line);
             }
             return result.toString();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -133,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
     }
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.menu_bar) {
-            Toast.makeText(MainActivity.this, "clicked", Toast.LENGTH_LONG).show();
+//            Toast.makeText(MainActivity.this, "clicked", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(MainActivity.this, MyCart.class);
             startActivity(intent);
         }

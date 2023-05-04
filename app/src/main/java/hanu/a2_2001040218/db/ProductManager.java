@@ -7,19 +7,14 @@ import android.database.sqlite.SQLiteStatement;
 
 import java.util.List;
 
-import hanu.a2_2001040218.MyCart;
-import hanu.a2_2001040218.ProductAdapter;
 import hanu.a2_2001040218.models.Product;
 
 public class ProductManager {
     // singleton instance
-    private static ProductManager instance;
+//    private static ProductManager instance;
 
-    private static final String INSERT_PRODUCT =
-            "INSERT INTO " + "products" + "(thumbnail, name, category, unitPrice) VALUES (?, ?, ?, ?)";
-
-    private DbHelper dbHelper;
-    private SQLiteDatabase sqLiteDatabase;
+    private final DbHelper dbHelper;
+    private final SQLiteDatabase sqLiteDatabase;
     private Cursor cursor;
 
 
@@ -27,14 +22,14 @@ public class ProductManager {
         this.dbHelper = new DbHelper(context);
         sqLiteDatabase = dbHelper.getWritableDatabase();
     }
-    public static ProductManager getInstance(Context context) {
-        if (instance == null) {
-            instance = new ProductManager(context);
-        }
-        return instance;
-    }
+//    public static ProductManager getInstance(Context context) {
+//        if (instance == null) {
+//            instance = new ProductManager(context);
+//        }
+//        return instance;
+//    }
 
-    public boolean saveProduct(Product product, Context context) {
+    public void saveProduct(Product product, Context context) {
         // connect to db
 
         DbHelper dbHelper = new DbHelper(context);
@@ -64,7 +59,6 @@ public class ProductManager {
 
         // close connection
         db.close();
-        return id > 0;
     }
 
     public int getQuantity(Context context, String name ) {
@@ -79,19 +73,20 @@ public class ProductManager {
         if (cursor != null && cursor.moveToFirst()) {
 
             quantity = Integer.parseInt(cursor.getString(quantityIndex));
-        } else {
-            // cursor is null
+        }  // cursor is null
+
+        if (cursor != null) {
+            cursor.close();
         }
-        cursor.close();
         db1.close();
 
         return quantity;
     }
 
-    public int getTotalPrice(Context context, String name) {
+    public int getTotalPrice(String name) {
         // connect to database
-        DbHelper dbHelper = new DbHelper(context);
-        SQLiteDatabase db1 = dbHelper.getReadableDatabase();
+//        DbHelper dbHelper = new DbHelper(context);
+//        SQLiteDatabase db1 = dbHelper.getReadableDatabase();
 
         // get total price
         cursor = sqLiteDatabase.rawQuery("SELECT totalPrice FROM products WHERE name ='" + name +"'", null);
@@ -113,12 +108,12 @@ public class ProductManager {
         cursor = sqLiteDatabase.rawQuery("SELECT unitPrice, quantity, totalPrice FROM products WHERE name ='" + name +"'" , null, null);
         int unitPriceIndex = cursor.getColumnIndex("unitPrice");
         int quantityIndex = cursor.getColumnIndex("quantity");
-        int totalPriceIndex = cursor.getColumnIndex("totalPrice");
+//        int totalPriceIndex = cursor.getColumnIndex("totalPrice");
 
         while (cursor.moveToNext()) {
 
             int quantityBefore = Integer.parseInt(cursor.getString(quantityIndex));
-            int totalPriceBefore = Integer.parseInt(cursor.getString(totalPriceIndex));
+//            int totalPriceBefore = Integer.parseInt(cursor.getString(totalPriceIndex));
             int unitPrice = Integer.parseInt(cursor.getString(unitPriceIndex));
             String quantityAfter = String.valueOf((quantityBefore + 1));
             String totalPrice = String.valueOf((Integer.parseInt(quantityAfter) * unitPrice));
@@ -149,12 +144,12 @@ public class ProductManager {
         cursor = sqLiteDatabase.rawQuery("SELECT unitPrice, quantity, totalPrice FROM products WHERE name ='" + name +"'" , null, null);
         int unitPriceIndex = cursor.getColumnIndex("unitPrice");
         int quantityIndex = cursor.getColumnIndex("quantity");
-        int totalPriceIndex = cursor.getColumnIndex("totalPrice");
+//        int totalPriceIndex = cursor.getColumnIndex("totalPrice");
 
         while (cursor.moveToNext()) {
 
             int quantityBefore = Integer.parseInt(cursor.getString(quantityIndex));
-            int totalPriceBefore = Integer.parseInt(cursor.getString(totalPriceIndex));
+//            int totalPriceBefore = Integer.parseInt(cursor.getString(totalPriceIndex));
             int unitPrice = Integer.parseInt(cursor.getString(unitPriceIndex));
             String quantityAfter = String.valueOf((quantityBefore - 1));
             String totalPrice = String.valueOf((Integer.parseInt(quantityAfter) * unitPrice));
@@ -196,19 +191,6 @@ public class ProductManager {
 
         return exists;
     }
-//    public boolean add(Product product) {
-//        SQLiteStatement statement = sqLiteDatabase.compileStatement(INSERT_PRODUCT);
-//        statement.bindString(1, product.getThumbnail());
-//        statement.bindString(2, product.getName());
-//        statement.bindString(3, product.getCategory());
-//        statement.bindString(4, String.valueOf(product.getUnitPrice()));
-//        int id = (int) statement.executeInsert();
-//        if (id > 0) {
-//            product.setId((id));
-//            return true;
-//        }
-//        return false;
-//    }
 
     public void remove(Product product, Context context) {
 
@@ -227,6 +209,14 @@ public class ProductManager {
 
     }
 
+    public int getBill(List<Product> products) {
+        int totalBill = 0;
+        for (Product product : products) {
+            int priceOfEach = getTotalPrice(product.getName());
+            totalBill += priceOfEach;
+        }
+        return totalBill;
+    }
 
     
 

@@ -1,5 +1,9 @@
 package hanu.a2_2001040218.models;
 
+import androidx.annotation.NonNull;
+
+import java.util.Objects;
+
 public class Product {
     int id;
     String thumbnail;
@@ -22,9 +26,6 @@ public class Product {
         this.unitPrice = unitPrice;
     }
 
-    public Product() {
-
-    }
 
     public int getId() {
         return id;
@@ -66,6 +67,20 @@ public class Product {
         this.unitPrice = unitPrice;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Product product = (Product) o;
+        return id == product.id && unitPrice == product.unitPrice && thumbnail.equals(product.thumbnail) && name.equals(product.name) && category.equals(product.category);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, thumbnail, name, category, unitPrice);
+    }
+
+    @NonNull
     @Override
     public String toString() {
         return "Product{" +

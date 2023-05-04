@@ -1,15 +1,13 @@
 package hanu.a2_2001040218;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -23,75 +21,55 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-import hanu.a2_2001040218.db.DbHelper;
 import hanu.a2_2001040218.db.ProductManager;
 import hanu.a2_2001040218.models.Product;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
-    private List<Product> products;
-    private Context context;
-    private ProductManager productManager = new ProductManager();
+    private final List<Product> products;
+    private final Context context;
+    private static ProductManager productManager;
+    private final List<Product> resultList;
+    private NumberFormat numberFormat;
+
 
     public ProductAdapter(Context context, List<Product> products) {
         this.products = products;
         this.context = context;
+        this.resultList = new ArrayList<>();
     }
 
     @NonNull
     @Override
     public ProductAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.product_view, null);
+        View view = inflater.inflate(R.layout.product_view, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ProductAdapter.ViewHolder holder, int position) {
-        Product product = products.get(position);
-        ExecutorService executor = Executors.newFixedThreadPool(4);
-        Handler handler = HandlerCompat.createAsync(Looper.getMainLooper());
-        executor.execute(() -> {
-            Bitmap bitmap = downloadImage(products.get(position).getThumbnail());
-            if (bitmap != null) {
-                handler.post(() -> holder.img.setImageBitmap(bitmap));             }         });
-        holder.productName.setText(product.getName());
-        holder.productPrice.setText(String.valueOf(product.getUnitPrice()));
-        holder.btn_add.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(context, "eweweqweqw", Toast.LENGTH_LONG).show();
-                int id = product.getId();
-                String thumbnail = product.getThumbnail();
-                String name = product.getName();
-                String category = product.getCategory();
-                int unitPrice = product.getUnitPrice();
-                Product product = new Product(thumbnail, name, category, unitPrice);
-                productManager.saveProduct(product);
-
-
-            }
-        });
+        productManager = new ProductManager(context);
+        numberFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        Product product = resultList.get(position);
+        holder.bind(product);
     }
 
-
-    private Bitmap downloadImage(String thumbnail) {
+    private static Bitmap downloadImage(String thumbnail) {
         try {
             URL url = new URL(thumbnail);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.connect();
             InputStream is = connection.getInputStream();
-            Bitmap bitmap = BitmapFactory.decodeStream(is);
-            return bitmap;
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+            return BitmapFactory.decodeStream(is);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -100,10 +78,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        return products.size();
+        return resultList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView img;
         TextView productName;
         TextView productPrice;
@@ -118,8 +96,56 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
 
         }
-    }
+        public void bind(Product product) {
+            ExecutorService executor = Executors.newFixedThreadPool(4);
+            Handler handler = HandlerCompat.createAsync(Looper.getMainLooper());
+            executor.execute(() -> {
+                Bitmap bitmap = downloadImage(product.getThumbnail());
+                if (bitmap != null) {
+                    handler.post(() -> img.setImageBitmap(bitmap));
+                }
+            });
+            productName.setText(product.getName());
+            productPrice.setText(numberFormat.format(product.getUnitPrice()));
+            btn_add.setOnClickListener(view -> {
+                Toast.makeText(context, "adding", Toast.LENGTH_LONG).show();
 
+
+
+                String thumbnail = product.getThumbnail();
+                String name = product.getName();
+                String category = product.getCategory();
+                int unitPrice = product.getUnitPrice();
+                Product productTest = new Product(thumbnail, name, category, unitPrice);
+
+                // check if the product has already added
+                if (productManager.checkProductExists(context,name)) {
+                    productManager.increaseQuantity(context, name);
+                } else {
+                    productManager.saveProduct(productTest, context);
+
+                }
+
+
+
+            });
+        }
+    }
+    @SuppressLint("NotifyDataSetChanged")
+    public void filter(String query) {
+        resultList.clear();
+        if (query.isEmpty()) {
+            resultList.addAll(products);
+        } else {
+            query = query.toLowerCase(Locale.getDefault());
+            for (Product product : products) {
+                if (product.getName().toLowerCase().contains(query.toLowerCase())) {
+                    resultList.add(product);
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
 
 
 }
